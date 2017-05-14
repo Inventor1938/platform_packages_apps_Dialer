@@ -301,8 +301,8 @@ public class CallButtonPresenter extends Presenter<CallButtonPresenter.CallButto
     }
 
     public void addParticipantClicked() {
-        if (QtiImsExtUtils.isCarrierConfigEnabled(getUi().getContext(),
-                "add_multi_participants_enabled")){
+        if (getUi().getContext().getResources().getBoolean(
+                R.bool.add_multi_participants_enabled)){
             InCallPresenter.getInstance().sendAddMultiParticipantsIntent();
             return;
         }
