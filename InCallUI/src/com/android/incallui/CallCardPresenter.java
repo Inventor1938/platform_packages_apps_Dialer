@@ -1188,11 +1188,6 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
         updatePrimaryDisplayInfo();
     }
 
-    @Override
-    public void onSendStaticImageStateChanged(boolean isEnabled) {
-        //No-op
-    }
-
     private boolean isPrimaryCallActive() {
         return mPrimary != null && mPrimary.getState() == Call.State.ACTIVE;
     }
