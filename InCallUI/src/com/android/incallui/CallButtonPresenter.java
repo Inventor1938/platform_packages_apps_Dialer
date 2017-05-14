@@ -278,8 +278,8 @@ public class CallButtonPresenter extends Presenter<CallButtonPresenter.CallButto
             return;
         }
 
-        if (QtiImsExtUtils.isCarrierConfigEnabled(getUi().getContext(),
-                "add_multi_participants_enabled")){
+        if (getUi().getContext().getResources().getBoolean(
+                R.bool.add_multi_participants_enabled)){
             int participantsCount = 0;
             if (mCall.isConferenceCall()) {
                 participantsCount = mCall.getChildCallIds().size();
@@ -355,9 +355,11 @@ public class CallButtonPresenter extends Presenter<CallButtonPresenter.CallButto
         int currUnpausedVideoState = VideoUtils.getUnPausedVideoState(currVideoState);
         currUnpausedVideoState |= VideoProfile.STATE_BIDIRECTIONAL;
 
-        VideoProfile videoProfile = new VideoProfile(currUnpausedVideoState);
-        videoCall.sendSessionModifyRequest(videoProfile);
-        mCall.setSessionModificationState(Call.SessionModificationState.WAITING_FOR_RESPONSE);
+        if (!InCallLowBatteryListener.getInstance().onChangeToVideoCall(mCall)) {
+            VideoProfile videoProfile = new VideoProfile(currUnpausedVideoState);
+            videoCall.sendSessionModifyRequest(videoProfile);
+            mCall.setSessionModificationState(Call.SessionModificationState.WAITING_FOR_RESPONSE);
+        }
 
         if (QtiCallUtils.useCustomVideoUi(context)) {
             InCallAudioManager.getInstance().onModifyCallClicked(mCall,
@@ -572,7 +574,7 @@ public class CallButtonPresenter extends Presenter<CallButtonPresenter.CallButto
         ui.showButton(BUTTON_SWITCH_CAMERA, isVideo && !sIsHideMe);
         // show hide me button only for active video calls
         ui.showButton(BUTTON_HIDE_ME, isCallActive && isVideo &&
-                QtiCallUtils.shallShowStaticImageUi(getUi().getContext()));
+                QtiCallUtils.shallTransmitStaticImage(getUi().getContext()));
         ui.showButton(BUTTON_PAUSE_VIDEO, isVideo && !useExt && !useCustomVideoUi &&
                 !mEnhanceEnable);
         if (isVideo) {

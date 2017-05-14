@@ -1062,7 +1062,7 @@ public class InCallPresenter implements CallList.Listener,
         }
 
         Call call = mCallList.getVideoUpgradeRequestCall();
-        if (call != null) {
+        if (call != null && !InCallLowBatteryListener.getInstance().onChangeToVideoCall(call)) {
             VideoProfile videoProfile = new VideoProfile(videoState);
             call.getVideoCall().sendSessionModifyResponse(videoProfile);
             call.setSessionModificationState(Call.SessionModificationState.NO_REQUEST);
@@ -2038,6 +2038,16 @@ public class InCallPresenter implements CallList.Listener,
         return mThemeColors;
     }
 
+    /**
+     * this function will be called from glowpadwrapper to notify
+     * incallpresenter when user touch or release the answer view.
+     */
+    public void notifyAnswerViewGrabChanged(boolean isGrabbed) {
+        for (InCallEventListener listener : mInCallEventListeners) {
+            listener.onAnswerViewGrab(isGrabbed);
+        }
+    }
+
     private MaterialPalette getColorsFromCall(Call call) {
         if (call == null) {
             return getColorsFromPhoneAccountHandle(mPendingPhoneAccountHandle);
@@ -2169,6 +2179,7 @@ public class InCallPresenter implements CallList.Listener,
         public void updatePrimaryCallState();
         public void onIncomingVideoAvailabilityChanged(boolean isAvailable);
         public void onSendStaticImageStateChanged(boolean isEnabled);
+        public void onAnswerViewGrab(boolean isGrabbed);
     }
 
     public interface InCallUiListener {

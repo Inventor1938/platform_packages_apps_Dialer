@@ -591,6 +591,11 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
     }
 
     @Override
+    public void onAnswerViewGrab(boolean isGrabbed) {
+        // No-op - required for RcsCallPresenter.
+    }
+
+    @Override
     public void onIncomingVideoAvailabilityChanged(boolean isAvailable) {
         //NO OP
     }
@@ -1084,12 +1089,7 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
         Log.v(this, "showVideoUi : showIncoming = " + showIncomingVideo + " showOutgoing = "
                 + showOutgoingVideo + " shallTransmitStaticImage = " + shallTransmitStaticImage());
         if (showIncomingVideo || showOutgoingVideo) {
-            if (QtiCallUtils.shallShowStaticImageUi(mContext)) {
-                ui.showVideoViews(showOutgoingVideo && !shallTransmitStaticImage(),
-                        showIncomingVideo);
-            } else {
-                ui.showVideoViews(showOutgoingVideo, showIncomingVideo);
-            }
+            ui.showVideoViews(showOutgoingVideo && !shallTransmitStaticImage(), showIncomingVideo);
 
             boolean hidePreview = shallHidePreview(isConf, videoState);
             Log.v(this, "showVideoUi, hidePreview = " + hidePreview);
@@ -1099,9 +1099,7 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
 
             if (showOutgoingVideo) {
                 setPreviewSize(mDeviceOrientation, mPreviewAspectRatio);
-                if (QtiCallUtils.shallShowStaticImageUi(mContext)) {
-                    maybeLoadPreConfiguredImageAsync();
-                }
+                maybeLoadPreConfiguredImageAsync();
             }
 
             if (isVideoReceptionEnabled && !shallTransmitStaticImage()) {
