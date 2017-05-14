@@ -619,17 +619,6 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
             return;
         }
 
-        if (!QtiCallUtils.shallShowStaticImageUi(mContext) &&
-             QtiCallUtils.shallTransmitStaticImage(mContext) &&
-             mIsInBackground &&
-             shallTransmitStaticImage() &&
-             !VideoUtils.isTransmissionEnabled(call) &&
-             mVideoCall != null) {
-            /* Unset the pause image when Tx is disabled for eg. when background video call
-               that is transmitting static image is downgraded to Rx or to voice */
-            mVideoCall.setPauseImage(null);
-        }
-
         updateCameraSelection(call);
 
         if (isVideoCall) {
@@ -1173,18 +1162,9 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
 
         mIsInBackground = !showing;
 
-        if (!QtiCallUtils.shallShowStaticImageUi(mContext)) {
-            sShallTransmitStaticImage = sUseDefaultImage = mIsInBackground;
-        }
-
-        if (!VideoUtils.isVideoCall(mPrimaryCall)) {
+        if (mPrimaryCall == null || !VideoUtils.isActiveVideoCall(mPrimaryCall)) {
             Log.w(this, "onUiShowing, received for non-active video call");
             return;
-        }
-
-        if (!QtiCallUtils.shallShowStaticImageUi(mContext) &&
-            VideoUtils.isTransmissionEnabled(mPrimaryCall)) {
-            setPauseImage();
         }
 
         if (showing) {
